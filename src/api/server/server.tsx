@@ -386,45 +386,16 @@ export class HttpServer {
         router.get("/getMinedInfo/:address/:blockHash/:index", async (req: express.Request, res: express.Response) => {
             res.json(await this.rest.getMinedBlocks(req.params.address, req.params.blockHash, req.params.index))
         })
-        router.get("/getLedgerWallet/:startIndex/:count", async (req: express.Request, res: express.Response) => {
-            res.json(await this.rest.getLedgerWallet(req.params.startIndex, req.params.count))
-        })
-        router.post("/sendTxWithLedger", async (req: express.Request, res: express.Response) => {
-            res.json(await this.rest.sendTxWithLedger(
-                req.body.index,
-                req.body.from,
-                req.body.to,
-                req.body.amount,
-                req.body.fee,
-                req.body.txNonce,
-                async (tx: SignedTx) => {
-                    const newTxs = await this.hyconServer.txQueue.putTxs([tx])
-                    this.hyconServer.broadcastTxs(newTxs)
-                }))
-        })
         router.get("/possibilityLedger", async (req: express.Request, res: express.Response) => {
             res.json(await this.rest.possibilityLedger())
         })
         router.get("/getMarketCap", async (req: express.Request, res: express.Response) => {
             res.json(await this.rest.getMarketCap())
         })
-        router.get("/checkPasswordBitbox", async (req: express.Request, res: express.Response) => {
-            res.json(await this.rest.checkPasswordBitbox())
-        })
-        router.post("/checkWalletBitbox", async (req: express.Request, res: express.Response) => {
+        router.post("/sendTxWithHDWallet", async (req: express.Request, res: express.Response) => {
             res.json(
-                await this.rest.checkWalletBitbox(req.body.password),
-            )
-        })
-        router.post("/getBitboxWallet", async (req: express.Request, res: express.Response) => {
-            res.json(
-                await this.rest.getBitboxWallet(req.body.password, req.body.startIndex, req.body.count),
-            )
-        })
-        router.post("/sendTxWithBitbox", async (req: express.Request, res: express.Response) => {
-            res.json(
-                await this.rest.sendTxWithBitbox({
-                    from: req.body.from,
+                await this.rest.sendTxWithHDWallet({
+                    name: req.body.name,
                     password: req.body.password,
                     address: req.body.address,
                     amount: req.body.amount,
@@ -436,15 +407,6 @@ export class HttpServer {
                         this.hyconServer.broadcastTxs(newTxs)
                     }),
             )
-        })
-        router.post("/setBitboxPassword", async (req: express.Request, res: express.Response) => {
-            res.json(await this.rest.setBitboxPassword(req.body.password))
-        })
-        router.post("/createBitboxWallet", async (req: express.Request, res: express.Response) => {
-            res.json(await this.rest.createBitboxWallet(req.body.name, req.body.password))
-        })
-        router.post("/updateBitboxPassword", async (req: express.Request, res: express.Response) => {
-            res.json(await this.rest.updateBitboxPassword(req.body.originalPwd, req.body.newPwd))
         })
         router.get("/isUncleBlock/:blockHash", async (req: express.Request, res: express.Response) => {
             res.json(await this.rest.isUncleBlock(req.params.blockHash))
